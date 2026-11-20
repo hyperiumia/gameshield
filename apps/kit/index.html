@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GameShield — la caja negra de la economía de tu servidor. Telemetría forense y detección de duplicación para servidores de FiveM y el próximo ecosistema GTA VI.">
+<title>GameShield — La caja negra de tu servidor · Hyperium IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c0f;
+  --bg-2: #101217;
+  --surface: #15171d;
+  --line: #242730;
+  --text: #ece9e2;
+  --muted: #8d8a80;
+  --accent: #ffb224;
+  --alert: #ff594d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 200; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  opacity: 0.05;
+}
+::selection { background: var(--accent); color: var(--bg); }
+a { color: inherit; }
+h1, h2, h3, .display { font-family: 'Syne', sans-serif; font-weight: 800; }
+
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease var(--d, 0s), transform .8s cubic-bezier(.2,.7,.2,1) var(--d, 0s); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- NAV ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(11,12,15,0.85);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.mark {
+  width: 36px; height: 36px; border: 1px solid var(--accent);
+  display: grid; place-items: center;
+  font-family: 'Syne'; font-weight: 800; font-size: 15px; color: var(--accent);
+}
+.brand b { font-family: 'Syne'; font-size: 17px; letter-spacing: .02em; }
+.brand span { color: var(--muted); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; display: block; line-height: 1.2; }
+.nav-links { display: flex; gap: 30px; align-items: center; }
+.nav-links a {
+  color: var(--muted); text-decoration: none; font-size: 11px;
+  letter-spacing: .18em; text-transform: uppercase;
+  transition: color .25s ease, letter-spacing .35s ease;
+}
+.nav-links a:hover { color: var(--accent); letter-spacing: .3em; }
+.nav-cta {
+  border: 1px solid var(--accent) !important; color: var(--accent) !important;
+  padding: 9px 16px;
+}
+.nav-cta:hover { background: var(--accent); color: var(--bg) !important; }
+
+/* ---------- HERO ---------- */
+.hero {
+  position: relative;
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.12fr 0.88fr;
+  gap: 56px; align-items: center;
+  padding: 96px 32px 130px;
+  min-height: 86vh;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(rgba(36,39,48,0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36,39,48,0.35) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 0%, transparent 72%);
+}
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--accent); font-size: 11px; letter-spacing: .32em; text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.rec-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--alert);
+  animation: pulse 1.35s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,89,77,.5); } 50% { opacity: .3; box-shadow: 0 0 0 7px rgba(255,89,77,0); } }
+.hero h1 {
+  font-size: clamp(2.7rem, 7vw, 6.1rem);
+  line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.hero h1 .l2 { color: var(--accent); display: inline-block; }
+@supports ((-webkit-text-stroke: 2px black)) {
+  .hero h1 .l2 { color: transparent; -webkit-text-stroke: 2px var(--accent); }
+}
+.lede { color: var(--muted); max-width: 52ch; font-size: 15.5px; margin-bottom: 38px; }
+.lede b { color: var(--text); font-weight: 500; }
+.cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; text-decoration: none;
+  padding: 17px 30px; font-size: 12px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  transition: letter-spacing .35s ease, background .25s ease, color .25s ease, border-color .25s ease;
+}
+.btn-solid { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+.btn-solid:hover { letter-spacing: .28em; background: transparent; color: var(--accent); }
+.btn-ghost { border: 1px solid var(--line); color: var(--text); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); letter-spacing: .26em; }
+
+/* Recorder panel */
+.recorder {
+  position: relative;
+  background: linear-gradient(165deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--line);
+  padding: 24px 26px 28px;
+  transform: rotate(-1.1deg);
+  box-shadow: 0 40px 90px rgba(0,0,0,0.55);
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+.recorder:hover { transform: rotate(0deg) translateY(-4px); }
+.rec-head {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 18px;
+  font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+}
+.rec-head .live { color: var(--alert); display: flex; align-items: center; gap: 8px; }
+.wave { display: flex; align-items: flex-end; gap: 4px; height: 74px; margin: 6px 0 22px; }
+.wave i {
+  flex: 1; background: var(--accent); opacity: .8; height: var(--h, 40%);
+  transform-origin: bottom;
+  animation: bar 1.15s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * 0.06s);
+}
+@keyframes bar { from { transform: scaleY(.32); } to { transform: scaleY(1); } }
+.readout { display: grid; gap: 9px; font-size: 12px; }
+.readout .row { display: flex; justify-content: space-between; gap: 14px; }
+.readout .k { color: var(--muted); letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; }
+.readout .v { color: var(--text); font-weight: 500; }
+.readout .v.ok { color: var(--accent); }
+
+/* ---------- SECTIONS ---------- */
+.section { max-width: 1280px; margin: 0 auto; padding: 110px 32px; }
+.section-head { margin-bottom: 62px; }
+.section-head .eyebrow { margin-bottom: 16px; }
+h2 {
+  font-size: clamp(1.85rem, 3.8vw, 3.15rem);
+  text-transform: uppercase; letter-spacing: -0.012em; line-height: 1.02;
+  max-width: 22ch;
+}
+h2 em { font-style: normal; color: var(--accent); }
+.sub { color: var(--muted); max-width: 62ch; margin-top: 18px; }
+
+/* Pain */
+.pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.pain-card {
+  border: 1px solid var(--line); padding: 34px 28px; background: var(--bg-2);
+  position: relative; overflow: hidden;
+  transition: border-color .3s ease, transform .3s ease;
+}
+.pain-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+.pain-card .num {
+  font-family: 'Syne'; font-weight: 800; font-size: 64px; line-height: 1;
+  color: transparent; margin-bottom: 22px; display: block;
+  -webkit-text-stroke: 1px var(--line);
+  transition: -webkit-text-stroke-color .3s ease;
+}
+.pain-card:hover .num { -webkit-text-stroke-color: var(--accent); }
+.pain-card h3 { font-size: 19px; text-transform: uppercase; letter-spacing: .01em; margin-bottom: 12px; }
+.pain-card p { color: var(--muted); font-size: 13.5px; }
+
+/* How */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.how-cell { background: var(--bg); padding: 42px 32px 48px; transition: background .35s ease; }
+.how-cell:hover { background: var(--bg-2); }
+.how-cell .tag { color: var(--accent); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; }
+.how-cell h3 { font-size: 24px; text-transform: uppercase; margin: 18px 0 14px; }
+.how-cell p { color: var(--muted); font-size: 13.5px; }
+.how-cell .bar { width: 44px; height: 3px; background: var(--accent); margin-top: 26px; transition: width .45s cubic-bezier(.2,.7,.2,1); }
+.how-cell:hover .bar { width: 100%; }
+
+/* ---------- DEMO / INCIDENT ---------- */
+.demo {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 110px 0;
+}
+.demo-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+.incident-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 20px;
+  border-bottom: 1px solid var(--line); padding-bottom: 26px; margin-bottom: 34px;
+}
+.badge {
+  display: inline-block; border: 1px solid var(--alert); color: var(--alert);
+  font-size: 10px; letter-spacing: .26em; text-transform: uppercase; padding: 6px 12px;
+}
+.incident-id { color: var(--muted); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
+.incident-id b { color: var(--text); font-weight: 500; }
+
+.stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 44px; }
+.stat { background: var(--bg); padding: 26px 24px; }
+.stat .big { font-family: 'Syne'; font-weight: 800; font-size: clamp(1.7rem, 2.6vw, 2.45rem); line-height: 1; letter-spacing: -0.01em; }
+.stat .big.red { color: var(--alert); }
+.stat .big.amber { color: var(--accent); }
+.stat .lbl { color: var(--muted); font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; margin-top: 10px; }
+
+.alerts { display: grid; gap: 14px; margin-bottom: 48px; }
+.alert-card {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--bg); padding: 24px 26px;
+}
+.alert-card.high { border-left-color: var(--alert); }
+.alert-top { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.sev {
+  font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase;
+  padding: 4px 10px; border: 1px solid var(--accent); color: var(--accent);
+}
+.sev.high { border-color: var(--alert); color: var(--alert); }
+.rule-name { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.alert-count { margin-left: auto; font-size: 11px; color: var(--muted); letter-spacing: .12em; }
+.alert-card h3 { font-size: 18px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: .01em; }
+.explain {
+  color: var(--muted); font-size: 12.5px; border-top: 1px dashed var(--line);
+  padding-top: 12px; margin-top: 12px;
+}
+.explain::before { content: 'EXPLICACIÓN · '; color: var(--accent); letter-spacing: .18em; font-size: 10px; }
+
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+.filter {
+  background: transparent; border: 1px solid var(--line); color: var(--muted);
+  font-family: inherit; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  padding: 10px 16px; cursor: pointer;
+  transition: all .25s ease;
+}
+.filter:hover { border-color: var(--accent); color: var(--accent); }
+.filter.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+.timeline { display: grid; gap: 9px; }
+.tl-entry {
+  display: grid; grid-template-columns: 92px 1fr 180px;
+  gap: 20px; align-items: start;
+  padding: 17px 20px;
+  border: 1px solid var(--line); border-left: 3px solid var(--line);
+  background: rgba(255,255,255,0.012);
+  transition: transform .28s ease, background .28s ease, border-color .28s ease;
+}
+.tl-entry:hover { transform: translateX(7px); background: rgba(255,178,36,0.05); border-left-color: var(--accent); }
+.tl-entry.flag-high { border-left-color: var(--alert); }
+.tl-entry.flag-med { border-left-color: var(--accent); }
+.tl-time { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; padding-top: 3px; }
+.tl-main .type { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+.tl-entry.flag-high .tl-main .type { color: var(--alert); }
+.tl-main .who { font-weight: 600; font-size: 14px; margin: 5px 0 3px; }
+.tl-main .who span { color: var(--muted); font-weight: 400; }
+.tl-main .detail { color: var(--muted); font-size: 11.5px; }
+.tl-main .tags { margin-top: 8px; display: flex; gap: 7px; flex-wrap: wrap; }
+.tag-chip {
+  font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+  border: 1px solid var(--alert); color: var(--alert); padding: 3px 8px;
+}
+.tag-chip.med { border-color: var(--accent); color: var(--accent); }
+.tl-amount { text-align: right; font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600; padding-top: 2px; }
+.tl-amount .cur { display: block; color: var(--muted); font-size: 10px; letter-spacing: .18em; font-weight: 400; margin-top: 3px; }
+.tl-amount.hot { color: var(--alert); }
+.tl-amount.warm { color: var(--accent); }
+.demo-note { color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-top: 26px; }
+
+/* ---------- NON-GOALS ---------- */
+.nogoals { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 60px; align-items: start; }
+.nogoals ul { list-style: none; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.nogoals li {
+  padding: 20px 4px; border-bottom: 1px solid var(--line);
+  display: flex; gap: 18px; align-items: baseline;
+  transition: padding-left .3s ease, background .3s ease;
+}
+.nogoals li:hover { padding-left: 16px; background: rgba(255,178,36,0.03); }
+.nogoals li::before { content: '[ X ]'; color: var(--alert); font-size: 11px; letter-spacing: .1em; white-space: nowrap; }
+.nogoals li b { font-weight: 600; }
+.nogoals li p { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+
+/* ---------- PRICING ---------- */
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+.plan {
+  border: 1px solid var(--line); background: var(--bg-2);
+  padding: 36px 30px 34px; display: flex; flex-direction: column;
+  transition: transform .35s ease, border-color .3s ease;
+}
+.plan:hover { transform: translateY(-6px); border-color: var(--accent); }
+.plan.featured {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(255,178,36,0.09), var(--bg-2) 52%);
+  transform: translateY(-12px);
+}
+.plan.featured:hover { transform: translateY(-18px); }
+.plan .flag { font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; min-height: 14px; }
+.plan h3 { font-size: 22px; text-transform: uppercase; letter-spacing: .03em; }
+.plan .price { font-family: 'Syne'; font-weight: 800; font-size: 46px; line-height: 1; margin: 20px 0 4px; }
+.plan .price small { font-family: 'IBM Plex Mono'; font-size: 12px; color: var(--muted); font-weight: 400; letter-spacing: .12em; }
+.plan .for { color: var(--muted); font-size: 12px; margin-bottom: 26px; }
+.plan ul { list-style: none; display: grid; gap: 11px; margin-bottom: 32px; flex: 1; }
+.plan li { font-size: 12.5px; color: var(--text); display: flex; gap: 10px; }
+.plan li::before { content: '·'; color: var(--accent); font-weight: 700; }
+.plan .btn { text-align: center; }
+.pricing-note { color: var(--muted); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; margin-top: 30px; }
+
+/* ---------- AUDIT ---------- */
+.audit-wrap { border: 1px solid var(--line); background: var(--bg-2); padding: 52px 48px; }
+.audit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 44px; margin: 38px 0 42px; }
+.check {
+  display: flex; gap: 16px; align-items: baseline;
+  padding: 16px 0; border-bottom: 1px dashed var(--line);
+}
+.check::before {
+  content: ''; width: 15px; height: 15px; border: 1px solid var(--accent);
+  flex: none; transform: translateY(2px);
+}
+.check p { font-size: 13.5px; }
+.check p b { color: var(--accent); font-weight: 500; }
+
+/* ---------- FINAL CTA ---------- */
+.final {
+  max-width: 1280px; margin: 0 auto; padding: 130px 32px 120px;
+  text-align: left;
+}
+.final h2 {
+  font-size: clamp(2.4rem, 6vw, 5.2rem); max-width: 16ch;
+  text-transform: uppercase; line-height: 0.96; letter-spacing: -0.02em;
+}
+.final h2 em { font-style: normal; color: transparent; -webkit-text-stroke: 2px var(--alert); }
+.final .sub { margin: 30px 0 42px; }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 34px 32px;
+  display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+}
+footer a { color: var(--muted); text-decoration: none; transition: color .25s ease; }
+footer a:hover { color: var(--accent); }
+
+@media (max-width: 1020px) {
+  .hero { grid-template-columns: 1fr; padding-top: 64px; }
+  .recorder { max-width: 560px; }
+  .pain-grid, .how-grid, .plans, .stats-strip { grid-template-columns: 1fr 1fr; }
+  .nogoals { grid-template-columns: 1fr; gap: 34px; }
+  .plan.featured { transform: none; }
+}
+@media (max-width: 680px) {
+  .nav-links { display: none; }
+  .pain-grid, .how-grid, .plans, .stats-strip, .audit-grid { grid-template-columns: 1fr; }
+  .tl-entry { grid-template-columns: 1fr; gap: 8px; }
+  .tl-amount { text-align: left; }
+  .section, .demo-inner, .hero, .final { padding-left: 20px; padding-right: 20px; }
+  .audit-wrap { padding: 34px 22px; }
+}
+</style>
+<noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="#">
+    <div class="mark">GS</div>
+    <div>
+      <b>GameShield</b>
+      <span>by Hyperium IA</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#producto">Producto</a>
+    <a href="#incidente">Incidente</a>
+    <a href="#planes">Planes</a>
+    <a href="#auditoria">Auditoría</a>
+    <a class="nav-cta" href="#contacto">Solicitar demo</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow"><span class="rec-dot"></span> Flight recorder para economías de juego</div>
+    <h1>El día que<br>te dupen,<br><span class="l2">no hagas wipe.</span></h1>
+    <p class="lede">
+      GameShield es la <b>caja negra de la economía de tu servidor</b>: cada moneda,
+      ítem y vehículo en una línea de tiempo. Cuando alguien explote tu economía,
+      no pierdas meses de retención — <b>ten la evidencia</b>.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-solid" href="#incidente">Ver incidente reconstruido</a>
+      <a class="btn btn-ghost" href="#auditoria">Auditoría exprés gratis</a>
+    </div>
+  </div>
+
+  <aside class="recorder">
+    <div class="rec-head">
+      <span>GameShield // flight recorder</span>
+      <span class="live"><span class="rec-dot"></span> REC <span id="clock">00:04:21</span></span>
+    </div>
+    <div class="wave" aria-hidden="true">
+      <i style="--h:32%;--i:1"></i><i style="--h:58%;--i:2"></i><i style="--h:41%;--i:3"></i>
+      <i style="--h:76%;--i:4"></i><i style="--h:52%;--i:5"></i><i style="--h:88%;--i:6"></i>
+      <i style="--h:47%;--i:7"></i><i style="--h:64%;--i:8"></i><i style="--h:35%;--i:9"></i>
+      <i style="--h:82%;--i:10"></i><i style="--h:56%;--i:11"></i><i style="--h:71%;--i:12"></i>
+      <i style="--h:44%;--i:13"></i><i style="--h:90%;--i:14"></i><i style="--h:60%;--i:15"></i>
+      <i style="--h:38%;--i:16"></i><i style="--h:67%;--i:17"></i><i style="--h:49%;--i:18"></i>
+      <i style="--h:79%;--i:19"></i><i style="--h:54%;--i:20"></i><i style="--h:84%;--i:21"></i>
+      <i style="--h:42%;--i:22"></i><i style="--h:62%;--i:23"></i><i style="--h:36%;--i:24"></i>
+    </div>
+    <div class="readout">
+      <div class="row"><span class="k">Estado</span><span class="v ok">ARMADO</span></div>
+      <div class="row"><span class="k">Último lote</span><span class="v">200 ev · 41 ms</span></div>
+      <div class="row"><span class="k">Firma</span><span class="v ok">HMAC-SHA256 ✓</span></div>
+      <div class="row"><span class="k">Replay window</span><span class="v">300 s</span></div>
+      <div class="row"><span class="k">Cola / máx</span><span class="v">12 / 10.000</span></div>
+      <div class="row"><span class="k">CPU budget</span><span class="v">&lt; 1 ms / tick</span></div>
+    </div>
+  </aside>
+</header>
+
+<section class="section" id="producto">
+  <div class="section-head reveal">
+    <div class="eyebrow">01 · El dolor</div>
+    <h2>Un dupe no es un bug. <em>Es una crisis de negocio.</em></h2>
+    <p class="sub">Los servidores de roleplay son empresas: VIPs, cosméticos, pases.
+    Una explotación de duplicación destruye la economía en horas, obliga a un wipe
+    y expulsa a los jugadores que pagan.</p>
+  </div>
+  <div class="pain-grid">
+    <div class="pain-card reveal" style="--d:.05s">
+      <span class="num">01</span>
+      <h3>Wipe masivo</h3>
+      <p>Un solo exploit de duplicación aniquila meses de progreso acumulado por tu comunidad. La única "solución" conocida es resetear todo.</p>
+    </div>
+    <div class="pain-card reveal" style="--d:.15s">
+      <span class="num">02</span>
+      <h3>Fuga de ingresos</h3>
+      <p>Los jugadores VIP se van con el wipe. Retención, suscripciones y confianza caen en picada — justo cuando más costo tuvo captarlos.</p>
+    </div>
+    <div class="pain-card reveal" style="--d:.25s">
+      <span class="num">03</span>
+      <h3>Cero evidencia</h3>
+      <p>Sin registro forense no puedes demostrar quién explotó qué. Baneas a ciegas, tu staff discute, y el atacante vuelve con otra cuenta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="section-head reveal">
+    <div class="eyebrow">02 · La solución</div>
+    <h2>Observar. Alertar. <em>Probar.</em></h2>
+    <p class="sub">Un recurso ligero en tu servidor + análisis forense fuera del juego.
+    Sin promesas mágicas: medimos, detectamos y te entregamos la evidencia.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-cell reveal" style="--d:.05s">
+      <div class="tag">// grabadora</div>
+      <h3>Flight Recorder</h3>
+      <p>Cada evento económico — dinero, ítems, vehículos, transferencias — en una línea de tiempo. Un único recurso Lua/JS sin binarios nativos, con cola local y envío por lotes firmados. Nunca bloquea el loop del juego.</p>
+      <div class="bar"></div>
+    </div>
+    <div class="how-cell reveal" style="--d:.15s">
+      <div class="tag">// alertas</div>
+      <h3>Reglas explicables</h3>
+      <p>Dinero sin origen, duplicados en cascada, transferencias encadenadas. Cada alerta incluye su explicación — sin cajas negras de machine learning. Tu staff entiende el porqué en segundos.</p>
+      <div class="bar"></div>
+    </div>
+    <div class="how-cell reveal" style="--d:.25s">
+      <div class="tag">// evidencia</div>
+      <h3>Informe forense</h3>
+      <p>Reconstruye el incidente completo: quién, cómo, cuándo y cuánto. Exporta el informe para baneos con pruebas, para tu comunidad y para tu tranquilidad.</p>
+      <div class="bar"></div>
+    </div>
+  </div>
+</section>
+
+<section class="demo" id="incidente">
+  <div class="demo-inner">
+    <div class="incident-head">
+      <div>
+        <span class="badge">Incidente reconstruido</span>
+        <div class="incident-id">
+          SERVIDOR <b>demo-rp-01</b> · 20 NOV 2026 · 09:58—10:07 UTC ·
+          DETECTADO EN <b>00:00:07</b> tras el primer evento anómalo
+        </div>
+      </div>
+      <div class="eyebrow" style="margin:0"><span class="rec-dot"></span> Datos anonimizados</div>
+    </div>
+
+    <h2 class="reveal" style="margin-bottom:12px">Así se ve un dupe <em>desde el panel.</em></h2>
+    <p class="sub reveal" style="margin-bottom:44px">El mismo incidente que reconstruyen las reglas de GameShield:
+    dinero creado de la nada, vehículos duplicados en segundos y un lavado en cadena de tres saltos.</p>
+
+    <div class="stats-strip reveal">
+      <div class="stat">
+        <div class="big red">250.000</div>
+        <div class="lbl">creados sin origen</div>
+      </div>
+      <div class="stat">
+        <div class="big red">5×</div>
+        <div class="lbl">SULTAN_RS en 20 s</div>
+      </div>
+      <div class="stat">
+        <div class="big amber">715.500</div>
+        <div class="lbl">lavados · 3 saltos</div>
+      </div>
+      <div class="stat">
+        <div class="big">09:10</div>
+        <div class="lbl">minutos · incidente completo</div>
+      </div>
+    </div>
+
+    <div class="alerts">
+      <article class="alert-card high reveal">
+        <div class="alert-top">
+          <span class="sev high">Severidad alta</span>
+          <span class="rule-name">money_without_origin</span>
+          <span class="alert-count">1 EVENTO</span>
+        </div>
+        <h3>p-042 recibió 250.000 sin origen económico</h3>
+        <p class="explain">Ninguna venta, trueque o transferencia entrante de p-042 en los 600 s previos
+        justifica un crédito de 250.000. El evento proviene del recurso «unknown».</p>
+      </article>
+      <article class="alert-card high reveal" style="--d:.1s">
+        <div class="alert-top">
+          <span class="sev high">Severidad alta</span>
+          <span class="rule-name">cascade_dupes</span>
+          <span class="alert-count">5 EVENTOS</span>
+        </div>
+        <h3>5 concesiones idénticas de SULTAN_RS en 20 segundos</h3>
+        <p class="explain">La misma concesión (item.grant de «SULTAN_RS» cantidad 1) se repite 5 veces
+        en 20 s con el mismo origen (qb-garages · garage:store) — firma clásica de explotación de duplicación.</p>
+      </article>
+      <article class="alert-card reveal" style="--d:.2s">
+        <div class="alert-top">
+          <span class="sev">Severidad media</span>
+          <span class="rule-name">chained_transfers</span>
+          <span class="alert-count">3 EVENTOS</span>
+        </div>
+        <h3>Cadena de 3 transferencias moviendo casi el mismo monto</h3>
+        <p class="explain">3 saltos encadenados de money.transfer moviendo casi el mismo monto (±1%) con
+        menos de 120 s por salto (p-042 → p-043 → p-044 → p-045) — posible lavado o embudo coordinado.</p>
+      </article>
+    </div>
+
+    <div class="filters reveal">
+      <button class="filter active" data-filter="all">Todo</button>
+      <button class="filter" data-filter="dinero">Dinero</button>
+      <button class="filter" data-filter="item">Ítems</button>
+      <button class="filter" data-filter="transferencia">Transferencias</button>
+      <button class="filter" data-filter="flag">Solo alertas</button>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+    <p class="demo-note">Datos reconstruidos y anonimizados a partir de patrones reales de explotación · el mismo formato que exporta tu informe de evidencia</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="nogoals">
+    <div class="reveal">
+      <div class="eyebrow">03 · Honestidad técnica</div>
+      <h2>Lo que GameShield <em>no es.</em></h2>
+      <p class="sub">La confianza se construye con límites claros. Preferimos prometer menos y cumplirlo,
+      a vender humo anti-cheat en un mercado lleno de él.</p>
+    </div>
+    <ul>
+      <li><div><b>No es un anti-cheat.</b><p>Rockstar y las plataformas resuelven las trampas genéricas. Nosotros protegemos la lógica económica específica de tu comunidad: tus scripts, tus reglas, tu economía.</p></div></li>
+      <li><div><b>No prometemos bloqueo en microsegundos.</b><p>La analítica pesada vive fuera del juego. En el servidor solo hay una grabadora ligera con impacto medible y acotado.</p></div></li>
+      <li><div><b>No hay ban global en v1.</b><p>La reputación compartida entre servidores exige privacidad, revisión humana y apelaciones. Llegará cuando se pueda hacer bien.</p></div></li>
+      <li><div><b>No vendemos tu data ni la de tus jugadores.</b><p>Eres el responsable del dato; nosotros somos el procesador. Retención configurable y sin reventa.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="planes" style="padding-top:20px">
+  <div class="section-head reveal">
+    <div class="eyebrow">04 · Planes</div>
+    <h2>Paga por <em>eventos y retención</em>, no por jugadores.</h2>
+    <p class="sub">Sin castigo a las comunidades que están creciendo. El costo real depende del volumen
+    de tu economía y de cuánta historia forense quieras conservar.</p>
+  </div>
+  <div class="plans">
+    <div class="plan reveal">
+      <div class="flag">&nbsp;</div>
+      <h3>Sentinel</h3>
+      <div class="price">US$99<small> /mes</small></div>
+      <div class="for">Un servidor · comunidades en crecimiento</div>
+      <ul>
+        <li>Flight recorder completo</li>
+        <li>Timeline por jugador / ítem / transacción</li>
+        <li>Alertas explicables (reglas base)</li>
+        <li>Retención forense 30 días</li>
+        <li>Soporte por tickets</li>
+      </ul>
+      <a class="btn btn-ghost" href="#contacto">Empezar</a>
+    </div>
+    <div class="plan featured reveal" style="--d:.1s">
+      <div class="flag">◆ Recomendado</div>
+      <h3>Forensic</h3>
+      <div class="price">US$199<small> /mes</small></div>
+      <div class="for">Servidores con economía real e ingresos</div>
+      <ul>
+        <li>Todo lo de Sentinel</li>
+        <li>Reglas personalizadas por servidor</li>
+        <li>Investigación avanzada + exportación de evidencia</li>
+        <li>Rollback asistido tras incidentes</li>
+        <li>Retención forense 90 días</li>
+      </ul>
+      <a class="btn btn-solid" href="#contacto">Solicitar demo</a>
+    </div>
+    <div class="plan reveal" style="--d:.2s">
+      <div class="flag">&nbsp;</div>
+      <h3>Network</h3>
+      <div class="price">US$399+<small> /mes</small></div>
+      <div class="for">Redes de múltiples servidores</div>
+      <ul>
+        <li>Todo lo de Forensic</li>
+        <li>Multi-servidor y API dedicada</li>
+        <li>SSO y roles de staff</li>
+        <li>SLA y soporte prioritario</li>
+        <li>Retención forense configurable</li>
+      </ul>
+      <a class="btn btn-ghost" href="#contacto">Hablar con nosotros</a>
+    </div>
+  </div>
+  <p class="pricing-note">Facturación mensual · sin contrato forzoso · migración de datos incluida al salir</p>
+</section>
+
+<section class="section" id="auditoria" style="padding-top:20px">
+  <div class="audit-wrap reveal">
+    <div class="eyebrow">05 · Auditoría exprés — gratuita</div>
+    <h2>Seis preguntas. <em>Veinte minutos.</em></h2>
+    <p class="sub">Responde esto hoy, sin instalar nada. Si dos o más respuestas son "no", tu economía
+    está expuesta — y ahí es donde entra GameShield.</p>
+    <div class="audit-grid">
+      <div class="check"><p>¿Cada transacción de tu servidor queda registrada con <b>quién, cuánto y cuándo</b>?</p></div>
+      <div class="check"><p>¿Puedes reconstruir <b>qué pasó con el dinero</b> de tu servidor ayer a las 22:14?</p></div>
+      <div class="check"><p>¿Sabes <b>qué recursos (scripts)</b> pueden crear dinero o ítems en tu servidor?</p></div>
+      <div class="check"><p>¿Tienes alertas cuando alguien recibe dinero <b>sin origen económico</b>?</p></div>
+      <div class="check"><p>¿Puedes exportar <b>evidencia</b> para justificar un baneo ante tu comunidad?</p></div>
+      <div class="check"><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p></div>
+    </div>
+    <a class="btn btn-solid" href="#contacto">Quiero mi auditoría exprés</a>
+  </div>
+</section>
+
+<section class="final" id="contacto">
+  <div class="reveal">
+    <div class="eyebrow"><span class="rec-dot"></span> El próximo wipe es opcional</div>
+    <h2>No esperes <em>al dupe</em> para tener evidencia.</h2>
+    <p class="sub">GameShield está instalándose ahora en los primeros servidores piloto a precio fundador.
+    Agenda 20 minutos y te mostramos tu economía en nuestro panel.</p>
+    <div class="cta-row">
+      <a class="btn btn-solid" href="mailto:hola@hyperiumia.dev?subject=GameShield%20—%20Auditoría%20exprés">Solicitar auditoría exprés</a>
+      <a class="btn btn-ghost" href="#incidente">Volver al incidente</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>GameShield by Hyperium IA · 2026 · Software propietario</div>
+  <div>
+    <a href="mailto:hola@hyperiumia.dev">hola@hyperiumia.dev</a>
+    &nbsp;·&nbsp;
+    FiveM y Rockstar Games son marcas de sus respectivos dueños · GameShield es una solución independiente
+  </div>
+</footer>
+
+<script>
+const EVENTS = [
+  { time: '09:58:00', cat: 'dinero',       type: 'SALE',            who: 'p-007 "Lucia"',   detail: 'qb-shops · shop:sell · venta legítima con origen', amount: '+4.200', cur: 'USD', flag: 'none', tags: [] },
+  { time: '09:58:01', cat: 'dinero',       type: 'MONEY.CREDIT',    who: 'p-007 "Lucia"',   detail: 'qb-shops · shop:sell · respaldado por la venta anterior', amount: '+4.200', cur: 'USD', flag: 'none', tags: [] },
+  { time: '10:05:00', cat: 'dinero',       type: 'MONEY.CREDIT',    who: 'p-042 "DupeR"',   detail: 'recurso: unknown · evento: external · sin contraparte', amount: '+250.000', cur: 'USD', flag: 'high', tags: ['dinero sin origen'] },
+  { time: '10:05:02', cat: 'item',         type: 'ITEM.GRANT',      who: 'p-042 "DupeR"',   detail: 'qb-garages · garage:store · SULTAN_RS ×1', amount: 'SULTAN_RS', cur: '×1 · 1/5', flag: 'high', tags: ['cascade dupes'] },
+  { time: '10:05:07', cat: 'item',         type: 'ITEM.GRANT',      who: 'p-042 "DupeR"',   detail: 'qb-garages · garage:store · SULTAN_RS ×1', amount: 'SULTAN_RS', cur: '×1 · 2/5', flag: 'high', tags: ['cascade dupes'] },
+  { time: '10:05:12', cat: 'item',         type: 'ITEM.GRANT',      who: 'p-042 "DupeR"',   detail: 'qb-garages · garage:store · SULTAN_RS ×1', amount: 'SULTAN_RS', cur: '×1 · 3/5', flag: 'high', tags: ['cascade dupes'] },
+  { time: '10:05:17', cat: 'item',         type: 'ITEM.GRANT',      who: 'p-042 "DupeR"',   detail: 'qb-garages · garage:store · SULTAN_RS ×1', amount: 'SULTAN_RS', cur: '×1 · 4/5', flag: 'high', tags: ['cascade dupes'] },
+  { time: '10:05:22', cat: 'item',         type: 'ITEM.GRANT',      who: 'p-042 "DupeR"',   detail: 'qb-garages · garage:store · SULTAN_RS ×1', amount: 'SULTAN_RS', cur: '×1 · 5/5', flag: 'high', tags: ['cascade dupes'] },
+  { time: '10:06:00', cat: 'transferencia', type: 'MONEY.TRANSFER', who: 'p-042 → p-043',   detail: 'qb-banking · bank:transfer · salto 1/3', amount: '240.000', cur: 'USD · salto 1', flag: 'med', tags: ['cadena de lavado'] },
+  { time: '10:06:40', cat: 'transferencia', type: 'MONEY.TRANSFER', who: 'p-043 → p-044',   detail: 'qb-banking · bank:transfer · salto 2/3 · ±1% del monto previo', amount: '238.000', cur: 'USD · salto 2', flag: 'med', tags: ['cadena de lavado'] },
+  { time: '10:07:10', cat: 'transferencia', type: 'MONEY.TRANSFER', who: 'p-044 → p-045',   detail: 'qb-banking · bank:transfer · salto 3/3 · ±1% del monto previo', amount: '237.500', cur: 'USD · salto 3', flag: 'med', tags: ['cadena de lavado'] }
+];
+
+(function renderTimeline() {
+  const root = document.getElementById('timeline');
+  root.innerHTML = EVENTS.map((e, i) => {
+    const flagClass = e.flag === 'high' ? 'flag-high' : e.flag === 'med' ? 'flag-med' : '';
+    const amtClass = e.flag === 'high' ? 'hot' : e.flag === 'med' ? 'warm' : '';
+    const tags = e.tags.map(t =>
+      `<span class="tag-chip ${e.flag === 'med' ? 'med' : ''}">${t}</span>`).join('');
+    return `
+      <div class="tl-entry reveal ${flagClass}" data-cat="${e.cat}" data-flag="${e.flag}" style="--d:${(i % 4) * 0.07}s">
+        <div class="tl-time">${e.time}</div>
+        <div class="tl-main">
+          <div class="type">${e.type}</div>
+          <div class="who">${e.who}</div>
+          <div class="detail">${e.detail}</div>
+          ${tags ? `<div class="tags">${tags}</div>` : ''}
+        </div>
+        <div class="tl-amount ${amtClass}">${e.amount}<span class="cur">${e.cur}</span></div>
+      </div>`;
+  }).join('');
+})();
+
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.tl-entry').forEach(entry => {
+      const show = f === 'all'
+        || (f === 'flag' ? entry.dataset.flag !== 'none' : entry.dataset.cat === f);
+      entry.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+(function recorderClock() {
+  const el = document.getElementById('clock');
+  let s = 4 * 60 + 21;
+  setInterval(() => {
+    s++;
+    const mm = String(Math.floor(s / 60) % 60).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    el.textContent = `00:${mm}:${ss}`;
+  }, 1000);
+})();
+</script>
+</body>
+</html>
