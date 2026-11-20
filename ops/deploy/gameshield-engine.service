@@ -1,0 +1,18 @@
+[Unit]
+Description=GameShield engine (FastAPI)
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=gameshield
+WorkingDirectory=/srv/gameshield/services/engine
+EnvironmentFile=/etc/gameshield/env
+ExecStart=/srv/gameshield/services/engine/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/srv/gameshield
+
+[Install]
+WantedBy=multi-user.target

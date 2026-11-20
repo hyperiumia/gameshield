@@ -1,0 +1,18 @@
+[Unit]
+Description=GameShield ingest (Rust/Axum)
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=gameshield
+WorkingDirectory=/srv/gameshield/services/ingest
+EnvironmentFile=/etc/gameshield/env
+ExecStart=/srv/gameshield/services/ingest/target/release/gameshield-ingest
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/srv/gameshield
+
+[Install]
+WantedBy=multi-user.target

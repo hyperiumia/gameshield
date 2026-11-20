@@ -1,0 +1,40 @@
+# GameShield — reverse proxy (Caddy v2)
+# Dominio del producto: games.hyperiumia.com (ajustar si cambia)
+
+games.hyperiumia.com {
+	encode gzip
+
+	# Dashboard (SPA estatica)
+	root * /srv/gameshield/apps/web/dist
+	file_server
+
+	# API del engine (timeline, alertas, evidencia)
+	handle /v1/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	# Healthchecks
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+	}
+}
+
+# Ingesta firmada (los edge agents de FiveM postean aqui)
+ingest.games.hyperiumia.com {
+	encode gzip
+
+	handle /v1/events {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8080
+	}
+}

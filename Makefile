@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap up down logs test e2e
+.PHONY: help bootstrap up down logs test e2e dev-engine dev-web
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -24,3 +24,9 @@ test: ## Run all test suites (lua, rust, python)
 
 e2e: ## End-to-end: signed batch -> ingest -> postgres
 	bash ops/scripts/e2e.sh
+
+dev-engine: ## Run engine locally (uvicorn)
+	cd services/engine && uv run uvicorn app.main:app --reload
+
+dev-web: ## Run dashboard locally (vite)
+	cd apps/web && npm run dev

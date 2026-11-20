@@ -42,5 +42,3 @@ Redis: rate limiting + future job queues.
 
 ## 6. Event contract
 
-`schemas/economic-event.v1.schema.json` is the single source of truth.
-Any change is additive + versioned. Breaking changes create v2.
