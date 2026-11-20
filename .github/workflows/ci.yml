@@ -1,0 +1,41 @@
+name: ci
+
+on:
+push:
+branches: [main]
+pull_request:
+
+jobs:
+schema:
+name: event-schema
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- name: Validate JSON Schema syntax
+run: python3 -m json.tool schemas/economic-event.v1.schema.json > /dev/null
+
+ingest:
+name: ingest · cargo check
+runs-on: ubuntu-latest
+defaults:
+run:
+working-directory: services/ingest
+steps:
+- uses: actions/checkout@v4
+- uses: dtolnay/rust-toolchain@stable
+- uses: Swatinem/rust-cache@v2
+- run: cargo check --all-targets
+
+engine:
+name: engine · pytest
+runs-on: ubuntu-latest
+defaults:
+run:
+working-directory: services/engine
+steps:
+- uses: actions/checkout@v4
+- uses: astral-sh/setup-uv@v5
+with:
+python-version: "3.12"
+- run: uv sync
+- run: uv run pytest -q
