@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.hyperiumia.dev/economic-event.v1.schema.json",
+  "title": "GameShield Economic Event v1",
+  "description": "Canonical record of one economic event inside a game server economy. Source of truth between edge agent and cloud.",
+  "type": "object",
+  "required": ["schema_version", "event_id", "server_id", "occurred_at", "type", "actor", "source"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "event_id": { "type": "string", "format": "uuid" },
+    "server_id": { "type": "string", "maxLength": 64 },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "type": {
+      "enum": [
+        "money.credit", "money.debit", "money.transfer",
+        "item.grant", "item.remove", "item.transfer",
+        "vehicle.grant", "vehicle.remove",
+        "property.transfer",
+        "purchase", "sale", "trade",
+        "admin.override"
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "required": ["player_id"],
+      "properties": {
+        "player_id": { "type": "string", "maxLength": 128 },
+        "display_name": { "type": "string", "maxLength": 128 },
+        "role": { "enum": ["player", "staff", "system"] }
+      }
+    },
+    "economy": {
+      "type": "object",
+      "properties": {
+        "currency": { "type": "string", "default": "USD" },
+        "amount": { "type": "number" },
+        "balance_after": { "type": "number" }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "properties": {
+        "kind": { "enum": ["money", "item", "vehicle", "property", "service"] },
+        "sku": { "type": "string", "maxLength": 128 },
+        "quantity": { "type": "number" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["resource"],
+      "properties": {
+        "resource": { "type": "string", "maxLength": 128 },
+        "event_name": { "type": "string", "maxLength": 128 },
+        "counterparty_id": { "type": "string", "maxLength": 128 }
+      }
+    },
+    "context": { "type": "object" }
+  },
+  "additionalProperties": false
+}
