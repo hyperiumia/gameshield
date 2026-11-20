@@ -29,7 +29,7 @@ make bootstrap   # install toolchains (Rust, uv, Node, Docker)
 make up          # start local infra (Postgres + Redis)
 make test        # run test suites
 Status
-v0.1 — scaffold. v1 scope: observe, alert, evidence. Explicitly NOT an
+v0.2 — real data flow: HMAC ingest, FiveM edge agent, anomaly rules, e2e. v1 scope: observe, alert, evidence. Explicitly NOT an
 anti-cheat and no global ban network in v1.
 
 License

@@ -1,0 +1,112 @@
+[
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222201",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T09:58:00Z",
+    "type": "sale",
+    "actor": { "player_id": "p-007", "display_name": "Lucia", "role": "player" },
+    "economy": { "currency": "USD", "amount": 4200.0 },
+    "source": { "resource": "qb-shops", "event_name": "shop:sell" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222202",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T09:58:01Z",
+    "type": "money.credit",
+    "actor": { "player_id": "p-007", "display_name": "Lucia", "role": "player" },
+    "economy": { "currency": "USD", "amount": 4200.0 },
+    "source": { "resource": "qb-shops", "event_name": "shop:sell" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222203",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:00Z",
+    "type": "money.credit",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "economy": { "currency": "USD", "amount": 250000.0 },
+    "source": { "resource": "unknown", "event_name": "external" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222204",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:02Z",
+    "type": "item.grant",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "subject": { "kind": "item", "sku": "SULTAN_RS", "quantity": 1 },
+    "source": { "resource": "qb-garages", "event_name": "garage:store" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222205",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:07Z",
+    "type": "item.grant",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "subject": { "kind": "item", "sku": "SULTAN_RS", "quantity": 1 },
+    "source": { "resource": "qb-garages", "event_name": "garage:store" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222206",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:12Z",
+    "type": "item.grant",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "subject": { "kind": "item", "sku": "SULTAN_RS", "quantity": 1 },
+    "source": { "resource": "qb-garages", "event_name": "garage:store" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222207",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:17Z",
+    "type": "item.grant",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "subject": { "kind": "item", "sku": "SULTAN_RS", "quantity": 1 },
+    "source": { "resource": "qb-garages", "event_name": "garage:store" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222208",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:05:22Z",
+    "type": "item.grant",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "subject": { "kind": "item", "sku": "SULTAN_RS", "quantity": 1 },
+    "source": { "resource": "qb-garages", "event_name": "garage:store" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222209",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:06:00Z",
+    "type": "money.transfer",
+    "actor": { "player_id": "p-042", "display_name": "DupeR", "role": "player" },
+    "economy": { "currency": "USD", "amount": 240000.0 },
+    "source": { "resource": "qb-banking", "event_name": "bank:transfer", "counterparty_id": "p-043" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222210",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:06:40Z",
+    "type": "money.transfer",
+    "actor": { "player_id": "p-043", "display_name": "Mule1", "role": "player" },
+    "economy": { "currency": "USD", "amount": 238000.0 },
+    "source": { "resource": "qb-banking", "event_name": "bank:transfer", "counterparty_id": "p-044" }
+  },
+  {
+    "schema_version": "1",
+    "event_id": "22222222-2222-4222-8222-222222222211",
+    "server_id": "demo-rp-01",
+    "occurred_at": "2026-11-20T10:07:10Z",
+    "type": "money.transfer",
+    "actor": { "player_id": "p-044", "display_name": "Mule2", "role": "player" },
+    "economy": { "currency": "USD", "amount": 237500.0 },
+    "source": { "resource": "qb-banking", "event_name": "bank:transfer", "counterparty_id": "p-045" }
+  }
+]
