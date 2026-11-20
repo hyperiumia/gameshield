@@ -209,7 +209,7 @@ export default function App() {
           <span className={`chip mode-${status}`}>
             {status === 'live' && '● LIVE'}
             {status === 'demo' && '● DEMO'}
-            {status === 'error' && '● DEMO (API sin respuesta)'}
+            {status === 'error' && '● MODO DEMO'}
             {status === 'loading' && '● CARGANDO'}
           </span>
           <button className="btn-mini" onClick={() => void refresh()}>Refrescar</button>

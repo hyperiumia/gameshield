@@ -31,3 +31,5 @@ dist/
 
 Local infra data
 pgdata/
+ops/site/
+*.zip
