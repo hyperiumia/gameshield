@@ -698,7 +698,7 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p>¿Puedes exportar <b>evidencia</b> para justificar un baneo ante tu comunidad?</p></div>
       <div class="check"><div><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p><div class="audit-opts"><span class="audit-opt">Menos de 5 minutos</span><span class="audit-opt">Menos de 1 hora</span><span class="audit-opt">Varias horas</span><span class="audit-opt">No lo sabría</span></div><p class="audit-hint">Selecciona una opción — se añade automáticamente a tu solicitud.</p></div></div>
     </div>
-    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A" data-mailto="audit">Quiero mi auditoría exprés</a>
+    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="audit">Quiero mi auditoría exprés</a>
     <p class="pricing-note" style="margin-top:22px">Al solicitarla te pediremos: nombre del servidor · Discord · framework · jugadores promedio · incidentes previos · herramienta actual</p>
   </div>
 </section>
@@ -716,7 +716,7 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p><b>Precio fundador</b> si deciden continuar</p></div>
       <div class="check"><p>Soporte directo durante la evaluación</p></div>
     </div>
-    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Postulaci%C3%B3n%20piloto%20fundador&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Postular mi servidor al piloto</a>
+    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="pilot">Postular mi servidor al piloto</a>
   </div>
 </section>
 
@@ -727,7 +727,7 @@ footer a:hover { color: var(--accent); }
     <p class="sub">GameShield está instalándose ahora en los primeros servidores piloto a precio fundador.
     Agenda 20 minutos y te mostramos tu economía en nuestro panel.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A" data-mailto="audit">Solicitar auditoría exprés</a>
+      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="audit">Solicitar auditoría exprés</a>
       <a class="btn btn-ghost" href="#incidente">Volver al incidente</a>
     </div>
   </div>
@@ -820,6 +820,52 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       opt.classList.add('selected');
       var line = '%0A' + encodeURIComponent('Tiempo estimado para detectar 5 vehiculos duplicados: ' + opt.textContent.trim());
       links.forEach(function (a) { a.setAttribute('href', a.dataset.baseHref + line); });
+    });
+  });
+})();
+</script>
+<script>
+(function mailtoBuilder() {
+  var EMAIL = 'hyperiumia@protonmail.com';
+  var SUBJECTS = {
+    audit: 'GameShield — Auditoría exprés',
+    pilot: 'GameShield — Postulación piloto fundador'
+  };
+  var LINES = [
+    'Nombre del servidor:',
+    'Enlace / Discord:',
+    'Framework actual:',
+    'Jugadores concurrentes promedio:',
+    '¿Has tenido incidentes de dupe o economía?:',
+    '¿Qué herramienta usas hoy?:',
+    'Ventana preferida para una demo de 20 minutos:'
+  ];
+  var selected = '';
+  var links = document.querySelectorAll('a[data-mailto]');
+  var opts = document.querySelectorAll('.audit-opt');
+
+  function build(kind) {
+    var body = LINES.slice();
+    if (selected) {
+      body.push('Tiempo estimado para detectar 5 vehículos duplicados: ' + selected);
+    }
+    return 'mailto:' + EMAIL +
+      '?subject=' + encodeURIComponent(SUBJECTS[kind]) +
+      '&body=' + encodeURIComponent(body.join('\r\n'));
+  }
+
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.location.href = build(a.getAttribute('data-mailto'));
+    });
+  });
+
+  opts.forEach(function (opt) {
+    opt.addEventListener('click', function () {
+      opts.forEach(function (o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      selected = opt.textContent.trim();
     });
   });
 })();
