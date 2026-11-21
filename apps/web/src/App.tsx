@@ -263,6 +263,11 @@ export default function App() {
                 <span className={`sev ${a.severity}`}>
                   {a.severity === 'high' ? 'Severidad alta' : 'Severidad media'}
                 </span>
+                {a.stage && (
+                  <span className={`sev stage-${a.stage}`}>
+                    {a.stage === 'anomaly' ? 'Anomalia' : 'Sospecha'}
+                  </span>
+                )}
                 <span className="rule-name">{a.rule}</span>
                 <span className="alert-count">{a.event_ids.length} evento(s)</span>
               </div>

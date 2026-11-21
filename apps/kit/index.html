@@ -370,6 +370,9 @@ footer a:hover { color: var(--accent); }
   .section, .demo-inner, .hero, .final { padding-left: 20px; padding-right: 20px; }
   .audit-wrap { padding: 34px 22px; }
 }
+.audit-opts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.audit-opt { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; border: 1px solid var(--line); color: var(--muted); padding: 6px 10px; transition: all .25s ease; cursor: default; }
+.audit-opt:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
 </head>
@@ -426,10 +429,10 @@ footer a:hover { color: var(--accent); }
     <div class="readout">
       <div class="row"><span class="k">Estado</span><span class="v ok">ARMADO</span></div>
       <div class="row"><span class="k">Último lote</span><span class="v">200 ev · 41 ms</span></div>
-      <div class="row"><span class="k">Firma</span><span class="v ok">HMAC-SHA256 ✓</span></div>
+      <div class="row"><span class="k">Firma</span><span class="v ok">HMAC-SHA256 · verificado ✓</span></div>
       <div class="row"><span class="k">Replay window</span><span class="v">300 s</span></div>
       <div class="row"><span class="k">Cola / máx</span><span class="v">12 / 10.000</span></div>
-      <div class="row"><span class="k">CPU budget</span><span class="v">&lt; 1 ms / tick</span></div>
+      <div class="row"><span class="k">CPU budget</span><span class="v">objetivo &lt; 1 ms / tick</span></div>
     </div>
   </aside>
 </header>
@@ -568,14 +571,48 @@ footer a:hover { color: var(--accent); }
     </div>
 
     <div class="timeline" id="timeline"></div>
-    <p class="demo-note">Datos reconstruidos y anonimizados a partir de patrones reales de explotación · el mismo formato que exporta tu informe de evidencia</p>
+    <p class="demo-note">Incidente de demostración basado en patrones comunes de explotación económica · el mismo formato que exporta tu informe de evidencia</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="section-head reveal">
+    <div class="eyebrow">03 · Cómo funciona</div>
+    <h2>Cuatro pasos. <em>Cero fricción.</em></h2>
+    <p class="sub">Del registro a la acción, sin tocar el rendimiento de tu servidor.</p>
+  </div>
+  <div class="how-grid" style="grid-template-columns: repeat(4, 1fr)">
+    <div class="how-cell reveal" style="--d:.05s">
+      <div class="tag">// paso 01</div>
+      <h3>Instalas</h3>
+      <p>Un recurso liviano (Lua/JS) en tu servidor. Sin binarios nativos, compatible con hostings gestionados.</p>
+      <div class="bar"></div>
+    </div>
+    <div class="how-cell reveal" style="--d:.15s">
+      <div class="tag">// paso 02</div>
+      <h3>Observa</h3>
+      <p>GameShield registra eventos económicos autoritativos — dinero, ítems, vehículos, transferencias — en una cola firmada.</p>
+      <div class="bar"></div>
+    </div>
+    <div class="how-cell reveal" style="--d:.25s">
+      <div class="tag">// paso 03</div>
+      <h3>Alerta</h3>
+      <p>Reglas explicables distinguen anomalía de sospecha. Sin cajas negras: cada alerta explica su porqué.</p>
+      <div class="bar"></div>
+    </div>
+    <div class="how-cell reveal" style="--d:.35s">
+      <div class="tag">// paso 04</div>
+      <h3>Investigas</h3>
+      <p>Línea de tiempo, evidencia exportable y acciones controladas por el staff. Tú decides; nosotros documentamos.</p>
+      <div class="bar"></div>
+    </div>
   </div>
 </section>
 
 <section class="section">
   <div class="nogoals">
     <div class="reveal">
-      <div class="eyebrow">03 · Honestidad técnica</div>
+      <div class="eyebrow">04 · Honestidad técnica</div>
       <h2>Lo que GameShield <em>no es.</em></h2>
       <p class="sub">La confianza se construye con límites claros. Preferimos prometer menos y cumplirlo,
       a vender humo anti-cheat en un mercado lleno de él.</p>
@@ -591,7 +628,7 @@ footer a:hover { color: var(--accent); }
 
 <section class="section" id="planes" style="padding-top:20px">
   <div class="section-head reveal">
-    <div class="eyebrow">04 · Planes</div>
+    <div class="eyebrow">05 · Planes</div>
     <h2>Paga por <em>eventos y retención</em>, no por jugadores.</h2>
     <p class="sub">Sin castigo a las comunidades que están creciendo. El costo real depende del volumen
     de tu economía y de cuánta historia forense quieras conservar.</p>
@@ -620,7 +657,8 @@ footer a:hover { color: var(--accent); }
         <li>Todo lo de Sentinel</li>
         <li>Reglas personalizadas por servidor</li>
         <li>Investigación avanzada + exportación de evidencia</li>
-        <li>Rollback asistido tras incidentes</li>
+        <li>Contención y recuperación asistida tras incidentes</li>
+        <li style="color:var(--muted)">Identificación de activos afectados y correcciones selectivas con aprobación del staff</li>
         <li>Retención forense 90 días</li>
       </ul>
       <a class="btn btn-solid" href="#contacto">Solicitar demo</a>
@@ -645,7 +683,7 @@ footer a:hover { color: var(--accent); }
 
 <section class="section" id="auditoria" style="padding-top:20px">
   <div class="audit-wrap reveal">
-    <div class="eyebrow">05 · Auditoría exprés — gratuita</div>
+    <div class="eyebrow">06 · Auditoría exprés — gratuita</div>
     <h2>Seis preguntas. <em>Veinte minutos.</em></h2>
     <p class="sub">Responde esto hoy, sin instalar nada. Si dos o más respuestas son "no", tu economía
     está expuesta — y ahí es donde entra GameShield.</p>
@@ -655,20 +693,38 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p>¿Sabes <b>qué recursos (scripts)</b> pueden crear dinero o ítems en tu servidor?</p></div>
       <div class="check"><p>¿Tienes alertas cuando alguien recibe dinero <b>sin origen económico</b>?</p></div>
       <div class="check"><p>¿Puedes exportar <b>evidencia</b> para justificar un baneo ante tu comunidad?</p></div>
-      <div class="check"><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p></div>
+      <div class="check"><div><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p><div class="audit-opts"><span class="audit-opt">Menos de 5 minutos</span><span class="audit-opt">Menos de 1 hora</span><span class="audit-opt">Varias horas</span><span class="audit-opt">No lo sabría</span></div></div></div>
     </div>
-    <a class="btn btn-solid" href="#contacto">Quiero mi auditoría exprés</a>
+    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Quiero mi auditoría exprés</a>
+    <p class="pricing-note" style="margin-top:22px">Al solicitarla te pediremos: nombre del servidor · Discord · framework · jugadores promedio · incidentes previos · herramienta actual</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:20px">
+  <div class="audit-wrap reveal">
+    <div class="eyebrow">07 · Piloto fundador</div>
+    <h2>Piloto privado con servidores seleccionados · <em>solicitando 3–5 operadores fundadores</em></h2>
+    <p class="sub">Los primeros servidores definen el producto con nosotros. Sin contrato forzoso, con números reales sobre la mesa.</p>
+    <div class="audit-grid">
+      <div class="check"><p>Instalación guiada del flight recorder en tu servidor</p></div>
+      <div class="check"><p>Auditoría exprés de exposición económica</p></div>
+      <div class="check"><p>Acceso al panel durante <b>30 días</b></p></div>
+      <div class="check"><p>Reporte de CPU, eventos y alertas — números medidos, no promesas</p></div>
+      <div class="check"><p><b>Precio fundador</b> si deciden continuar</p></div>
+      <div class="check"><p>Soporte directo durante la evaluación</p></div>
+    </div>
+    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Postulaci%C3%B3n%20piloto%20fundador&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Postular mi servidor al piloto</a>
   </div>
 </section>
 
 <section class="final" id="contacto">
   <div class="reveal">
-    <div class="eyebrow"><span class="rec-dot"></span> El próximo wipe es opcional</div>
+    <div class="eyebrow"><span class="rec-dot"></span> El próximo incidente no tiene por qué terminar en un wipe</div>
     <h2>No esperes <em>al dupe</em> para tener evidencia.</h2>
     <p class="sub">GameShield está instalándose ahora en los primeros servidores piloto a precio fundador.
     Agenda 20 minutos y te mostramos tu economía en nuestro panel.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20—%20Auditoría%20exprés">Solicitar auditoría exprés</a>
+      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Solicitar auditoría exprés</a>
       <a class="btn btn-ghost" href="#incidente">Volver al incidente</a>
     </div>
   </div>
@@ -679,7 +735,7 @@ footer a:hover { color: var(--accent); }
   <div>
     <a href="mailto:hyperiumia@protonmail.com">hyperiumia@protonmail.com</a>
     &nbsp;·&nbsp;
-    FiveM y Rockstar Games son marcas de sus respectivos dueños · GameShield es una solución independiente
+    FiveM y Rockstar Games son marcas de sus respectivos dueños · GameShield es una solución independiente · <a href="legal.html">Privacidad · Términos · Retención de datos</a>
   </div>
 </footer>
 

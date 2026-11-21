@@ -66,6 +66,7 @@ export const DEMO_EVENTS: GsEvent[] = [
 export const DEMO_ALERTS: GsAlert[] = [
   {
     rule: 'money_without_origin',
+    stage: 'suspicion',
     severity: 'high',
     player_id: 'p-042',
     summary: 'p-042 recibió 250.000 sin origen económico',
@@ -75,6 +76,7 @@ export const DEMO_ALERTS: GsAlert[] = [
   },
   {
     rule: 'cascade_dupes',
+    stage: 'suspicion',
     severity: 'high',
     player_id: 'p-042',
     summary: '5 concesiones idénticas de SULTAN_RS en 20 segundos',
@@ -90,6 +92,7 @@ export const DEMO_ALERTS: GsAlert[] = [
   },
   {
     rule: 'chained_transfers',
+    stage: 'anomaly',
     severity: 'medium',
     player_id: 'p-042',
     summary: 'Cadena de 3 transferencias moviendo casi el mismo monto',

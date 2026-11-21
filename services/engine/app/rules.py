@@ -1,7 +1,12 @@
 """Explainable anomaly rules for game-server economies (v1).
 
-Pure functions: events in, alerts out. No ML, no I/O. Every alert
-carries an `explain` string a server owner can read.
+Escalation model:
+  anomaly    -> shape worth noting; strong innocent explanations exist
+  suspicion  -> pattern strongly tied to exploitation; staff review required
+  evidence   -> confirmed only after human review (nothing is auto-evidence)
+
+An anomaly is not proof of an exploit: admin rewards, event payouts and
+legitimate scripts can look unusual. Alerts ask for review, never accuse.
 """
 from __future__ import annotations
 
@@ -11,15 +16,22 @@ from typing import Any
 
 Event = dict[str, Any]
 
+STAGE_ANOMALY = "anomaly"
+STAGE_SUSPICION = "suspicion"
+
+REVIEW_NOTE = " Requiere revision del staff: la anomalia no confirma un exploit."
+
 
 @dataclass
 class Alert:
     rule: str
     severity: str  # "low" | "medium" | "high"
+    stage: str  # STAGE_ANOMALY | STAGE_SUSPICION
     player_id: str
     summary: str
     event_ids: list[str] = field(default_factory=list)
     explain: str = ""
+    review_required: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -34,12 +46,24 @@ def _actor(ev: Event) -> str:
     return (ev.get("actor") or {}).get("player_id") or ""
 
 
+def _role(ev: Event) -> str:
+    return (ev.get("actor") or {}).get("role") or "player"
+
+
 def _amount(ev: Event) -> float:
     return float((ev.get("economy") or {}).get("amount") or 0)
 
 
+def _resource(ev: Event) -> str:
+    return (ev.get("source") or {}).get("resource") or "unknown"
+
+
 def money_without_origin(
-    events: list[Event], *, threshold: float = 100_000.0, window_seconds: int = 600
+    events: list[Event],
+    *,
+    threshold: float = 100_000.0,
+    window_seconds: int = 600,
+    legit_resources: frozenset[str] = frozenset(),
 ) -> list[Alert]:
     """Large credits to a player with no sale/trade/incoming transfer to justify them."""
     alerts: list[Alert] = []
@@ -48,7 +72,9 @@ def money_without_origin(
     for i, ev in enumerate(ordered):
         if ev.get("type") != "money.credit":
             continue
-        if (ev.get("actor") or {}).get("role", "player") != "player":
+        if _role(ev) != "player":
+            continue
+        if _resource(ev) in legit_resources:
             continue
         amount = _amount(ev)
         player = _actor(ev)
@@ -73,12 +99,14 @@ def money_without_origin(
                 Alert(
                     rule="money_without_origin",
                     severity="high",
+                    stage=STAGE_SUSPICION,
                     player_id=player,
-                    summary=f"{player} received {amount:,.0f} with no economic origin",
+                    summary=f"{player} recibio {amount:,.0f} sin origen economico",
                     event_ids=[ev.get("event_id", "")],
                     explain=(
-                        f"No sale/trade or incoming transfer for {player} in the previous "
-                        f"{window_seconds}s justifies a credit of {amount:,.0f}."
+                        f"Ninguna venta/trueque o transferencia entrante de {player} en los "
+                        f"{window_seconds}s previos justifica un credito de {amount:,.0f}"
+                        f" (recurso '{_resource(ev)}')." + REVIEW_NOTE
                     ),
                 )
             )
@@ -86,7 +114,11 @@ def money_without_origin(
 
 
 def cascade_dupes(
-    events: list[Event], *, min_count: int = 3, window_seconds: int = 30
+    events: list[Event],
+    *,
+    min_count: int = 3,
+    window_seconds: int = 30,
+    legit_resources: frozenset[str] = frozenset(),
 ) -> list[Alert]:
     """Identical grants (same item/qty/source) repeated to one actor in seconds."""
     alerts: list[Alert] = []
@@ -94,6 +126,8 @@ def cascade_dupes(
 
     for ev in events:
         if ev.get("type") not in ("item.grant", "vehicle.grant"):
+            continue
+        if _role(ev) != "player" or _resource(ev) in legit_resources:
             continue
         subj = ev.get("subject") or {}
         key = (
@@ -112,13 +146,14 @@ def cascade_dupes(
                 Alert(
                     rule="cascade_dupes",
                     severity="high",
+                    stage=STAGE_SUSPICION,
                     player_id=key[0],
-                    summary=f"{len(evs)}x identical '{key[2]}' grants in {window_seconds}s",
+                    summary=f"{len(evs)}x concesiones identicas de '{key[2]}' en {window_seconds}s",
                     event_ids=[e.get("event_id", "") for e in evs],
                     explain=(
-                        f"Same grant ({key[1]} of '{key[2]}' qty {key[3]}) repeated {len(evs)} times "
-                        f"within {window_seconds}s by {key[0]} via the same source event "
-                        f"'{key[4]}' — signature of a duplication exploit."
+                        f"La misma concesion ({key[1]} de '{key[2]}' qty {key[3]}) se repite "
+                        f"{len(evs)} veces en {window_seconds}s con el mismo origen "
+                        f"('{key[4]}') por {key[0]} — patron tipico de duplicacion." + REVIEW_NOTE
                     ),
                 )
             )
@@ -169,18 +204,28 @@ def chained_transfers(
                 Alert(
                     rule="chained_transfers",
                     severity="medium",
+                    stage=STAGE_ANOMALY,
                     player_id=_actor(origin),
-                    summary=f"transfer chain of depth {len(chain)} starting at {_actor(origin)}",
+                    summary=f"cadena de transferencias de profundidad {len(chain)} desde {_actor(origin)}",
                     event_ids=list(ids),
                     explain=(
-                        f"{len(chain)} chained money.transfer hops moving nearly the same amount "
-                        f"(within {amount_tolerance:.0%}) within {window_seconds}s per hop — "
-                        "possible laundering or coordinated funneling."
+                        f"{len(chain)} saltos encadenados de money.transfer moviendo casi el "
+                        f"mismo monto (tol {amount_tolerance:.0%}) con menos de {window_seconds}s "
+                        "por salto — patron compatible con lavado o embudo coordinado, pero "
+                        "tambien con regalos entre jugadores." + REVIEW_NOTE
                     ),
                 )
             )
     return alerts
 
 
-def evaluate(events: list[Event]) -> list[Alert]:
-    return money_without_origin(events) + cascade_dupes(events) + chained_transfers(events)
+def evaluate(
+    events: list[Event],
+    *,
+    legit_resources: frozenset[str] = frozenset(),
+) -> list[Alert]:
+    return (
+        money_without_origin(events, legit_resources=legit_resources)
+        + cascade_dupes(events, legit_resources=legit_resources)
+        + chained_transfers(events)
+    )

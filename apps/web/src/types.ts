@@ -37,6 +37,8 @@ export interface GsEvent {
 export interface GsAlert {
   rule: string;
   severity: string;
+  stage?: string;
+  review_required?: boolean;
   player_id: string;
   summary: string;
   event_ids: string[];

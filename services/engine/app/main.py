@@ -30,6 +30,10 @@ def require_key(x_gs_key: Annotated[Optional[str], Header()] = None) -> None:
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
+def _legit(value: Optional[str]) -> frozenset[str]:
+    return frozenset(s.strip() for s in (value or "").split(",") if s.strip())
+
+
 def _events_for(
     session: Session,
     server_id: str,
@@ -77,9 +81,12 @@ def list_alerts(
     player: Optional[str] = None,
     since: Optional[datetime] = None,
     until: Optional[datetime] = None,
+    legit_sources: Optional[str] = Query(
+        None, description="comma-separated resource names considered legitimate"
+    ),
 ) -> dict:
     events = _events_for(session, server_id, player, since, until)
-    alerts = [a.to_dict() for a in evaluate(events)]
+    alerts = [a.to_dict() for a in evaluate(events, legit_resources=_legit(legit_sources))]
     return {"count": len(alerts), "alerts": alerts}
 
 
@@ -87,6 +94,7 @@ class EvidenceRequest(BaseModel):
     player_id: Optional[str] = None
     since: Optional[datetime] = None
     until: Optional[datetime] = None
+    legit_sources: Optional[list[str]] = None
 
 
 @app.post("/v1/servers/{server_id}/evidence", dependencies=[Depends(require_key)])
@@ -97,8 +105,12 @@ def evidence_report(
 ) -> dict:
     body = body or EvidenceRequest()
     events = _events_for(session, server_id, body.player_id, body.since, body.until)
-    alerts = [a.to_dict() for a in evaluate(events)]
+    alerts = [
+        a.to_dict()
+        for a in evaluate(events, legit_resources=frozenset(body.legit_sources or []))
+    ]
     rules_triggered = sorted({a["rule"] for a in alerts})
+    stages = sorted({a["stage"] for a in alerts})
     return {
         "report": {
             "server_id": server_id,
@@ -110,6 +122,7 @@ def evidence_report(
             "total_events": len(events),
             "alert_count": len(alerts),
             "rules_triggered": rules_triggered,
+            "stages_present": stages,
         },
         "alerts": alerts,
         "events": events,

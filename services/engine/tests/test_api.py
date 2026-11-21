@@ -41,6 +41,24 @@ def test_alerts_integration(client):
     }
 
 
+def test_alerts_carry_stage(client):
+    res = client.get("/v1/servers/demo-rp-01/alerts", headers=HEADERS)
+    stages = {a["rule"]: a["stage"] for a in res.json()["alerts"]}
+    assert stages["chained_transfers"] == "anomaly"
+    assert stages["money_without_origin"] == "suspicion"
+    assert all(a["review_required"] for a in res.json()["alerts"])
+
+
+def test_legit_sources_param(client):
+    res = client.get(
+        "/v1/servers/demo-rp-01/alerts",
+        params={"legit_sources": "unknown"},
+        headers=HEADERS,
+    )
+    rules = {a["rule"] for a in res.json()["alerts"]}
+    assert "money_without_origin" not in rules
+
+
 def test_evidence_report(client):
     res = client.post(
         "/v1/servers/demo-rp-01/evidence",
@@ -51,4 +69,5 @@ def test_evidence_report(client):
     assert data["summary"]["total_events"] == 7
     assert data["summary"]["alert_count"] >= 2
     assert "money_without_origin" in data["summary"]["rules_triggered"]
+    assert "suspicion" in data["summary"]["stages_present"] or "anomaly" in data["summary"]["stages_present"]
     assert all(e["actor"]["player_id"] == "p-042" for e in data["events"])
