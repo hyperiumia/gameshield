@@ -30,3 +30,9 @@ dev-engine: ## Run engine locally (uvicorn)
 
 dev-web: ## Run dashboard locally (vite)
 	cd apps/web && npm run dev
+
+dev-engine: ## Run engine locally (uvicorn)
+	cd services/engine && uv run uvicorn app.main:app --reload
+
+dev-web: ## Run dashboard locally (vite)
+	cd apps/web && npm run dev
