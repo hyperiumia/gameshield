@@ -88,7 +88,7 @@ export const DEMO_ALERTS: GsAlert[] = [
       '22222222-2222-4222-8222-222222222208',
     ],
     explain:
-      'La misma concesión (item.grant de SULTAN_RS cantidad 1) se repite 5 veces en 20 s con el mismo origen — firma clásica de duplicación.',
+      'La misma concesión (item.grant de SULTAN_RS cantidad 1) se repite 5 veces en 20 s con el mismo origen — patrón compatible con explotación de duplicación; requiere revisión del staff.',
   },
   {
     rule: 'chained_transfers',

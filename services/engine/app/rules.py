@@ -153,7 +153,7 @@ def cascade_dupes(
                     explain=(
                         f"La misma concesion ({key[1]} de '{key[2]}' qty {key[3]}) se repite "
                         f"{len(evs)} veces en {window_seconds}s con el mismo origen "
-                        f"('{key[4]}') por {key[0]} — patron tipico de duplicacion." + REVIEW_NOTE
+                        f"('{key[4]}') por {key[0]} — patron compatible con explotacion de duplicacion." + REVIEW_NOTE
                     ),
                 )
             )

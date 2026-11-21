@@ -244,7 +244,7 @@ export default function App() {
         </div>
         <div className="stat">
           <div className="big amber">{n(stats.laundered)}</div>
-          <div className="lbl">en cadena de lavado</div>
+          <div className="lbl">movidos en cadena</div>
         </div>
       </section>
 

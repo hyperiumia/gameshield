@@ -372,7 +372,10 @@ footer a:hover { color: var(--accent); }
 }
 .audit-opts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .audit-opt { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; border: 1px solid var(--line); color: var(--muted); padding: 6px 10px; transition: all .25s ease; cursor: default; }
+.audit-opt { cursor: pointer; }
 .audit-opt:hover { border-color: var(--accent); color: var(--accent); }
+.audit-opt.selected { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.audit-hint { color: var(--muted); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; margin-top: 12px; }
 </style>
 <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
 </head>
@@ -475,7 +478,7 @@ footer a:hover { color: var(--accent); }
     <div class="how-cell reveal" style="--d:.05s">
       <div class="tag">// grabadora</div>
       <h3>Flight Recorder</h3>
-      <p>Cada evento económico — dinero, ítems, vehículos, transferencias — en una línea de tiempo. Un único recurso Lua/JS sin binarios nativos, con cola local y envío por lotes firmados. Nunca bloquea el loop del juego.</p>
+      <p>Cada evento económico — dinero, ítems, vehículos, transferencias — en una línea de tiempo. Un único recurso Lua/JS sin binarios nativos, con cola local y envío por lotes firmados. Diseñado para no bloquear el flujo del servidor; el impacto se mide en cada piloto.</p>
       <div class="bar"></div>
     </div>
     <div class="how-cell reveal" style="--d:.15s">
@@ -508,7 +511,7 @@ footer a:hover { color: var(--accent); }
 
     <h2 class="reveal" style="margin-bottom:12px">Así se ve un dupe <em>desde el panel.</em></h2>
     <p class="sub reveal" style="margin-bottom:44px">El mismo incidente que reconstruyen las reglas de GameShield:
-    dinero creado de la nada, vehículos duplicados en segundos y un lavado en cadena de tres saltos.</p>
+    dinero creado de la nada, vehículos duplicados en segundos y movimientos encadenados de tres saltos.</p>
 
     <div class="stats-strip reveal">
       <div class="stat">
@@ -521,7 +524,7 @@ footer a:hover { color: var(--accent); }
       </div>
       <div class="stat">
         <div class="big amber">715.500</div>
-        <div class="lbl">lavados · 3 saltos</div>
+        <div class="lbl">US$ movidos en cadena · 3 saltos</div>
       </div>
       <div class="stat">
         <div class="big">09:10</div>
@@ -548,7 +551,7 @@ footer a:hover { color: var(--accent); }
         </div>
         <h3>5 concesiones idénticas de SULTAN_RS en 20 segundos</h3>
         <p class="explain">La misma concesión (item.grant de «SULTAN_RS» cantidad 1) se repite 5 veces
-        en 20 s con el mismo origen (qb-garages · garage:store) — firma clásica de explotación de duplicación.</p>
+        en 20 s con el mismo origen (qb-garages · garage:store) — patrón compatible con explotación de duplicación; requiere revisión del staff.</p>
       </article>
       <article class="alert-card reveal" style="--d:.2s">
         <div class="alert-top">
@@ -693,9 +696,9 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p>¿Sabes <b>qué recursos (scripts)</b> pueden crear dinero o ítems en tu servidor?</p></div>
       <div class="check"><p>¿Tienes alertas cuando alguien recibe dinero <b>sin origen económico</b>?</p></div>
       <div class="check"><p>¿Puedes exportar <b>evidencia</b> para justificar un baneo ante tu comunidad?</p></div>
-      <div class="check"><div><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p><div class="audit-opts"><span class="audit-opt">Menos de 5 minutos</span><span class="audit-opt">Menos de 1 hora</span><span class="audit-opt">Varias horas</span><span class="audit-opt">No lo sabría</span></div></div></div>
+      <div class="check"><div><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p><div class="audit-opts"><span class="audit-opt">Menos de 5 minutos</span><span class="audit-opt">Menos de 1 hora</span><span class="audit-opt">Varias horas</span><span class="audit-opt">No lo sabría</span></div><p class="audit-hint">Selecciona una opción — se añade automáticamente a tu solicitud.</p></div></div>
     </div>
-    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Quiero mi auditoría exprés</a>
+    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A" data-mailto="audit">Quiero mi auditoría exprés</a>
     <p class="pricing-note" style="margin-top:22px">Al solicitarla te pediremos: nombre del servidor · Discord · framework · jugadores promedio · incidentes previos · herramienta actual</p>
   </div>
 </section>
@@ -719,12 +722,12 @@ footer a:hover { color: var(--accent); }
 
 <section class="final" id="contacto">
   <div class="reveal">
-    <div class="eyebrow"><span class="rec-dot"></span> El próximo incidente no tiene por qué terminar en un wipe</div>
-    <h2>No esperes <em>al dupe</em> para tener evidencia.</h2>
+    <div class="eyebrow"><span class="rec-dot"></span> No esperes al dupe para poder investigarlo</div>
+    <h2>Convierte el próximo incidente en <em>evidencia</em>, no en un wipe.</h2>
     <p class="sub">GameShield está instalándose ahora en los primeros servidores piloto a precio fundador.
     Agenda 20 minutos y te mostramos tu economía en nuestro panel.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A">Solicitar auditoría exprés</a>
+      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com?subject=GameShield%20%E2%80%94%20Auditor%C3%ADa%20expr%C3%A9s&amp;body=Nombre%20del%20servidor%3A%0AEnlace%20/%20Discord%3A%0AFramework%20actual%3A%0AJugadores%20concurrentes%20promedio%3A%0A%C2%BFHas%20tenido%20incidentes%20de%20dupe%20o%20econom%C3%ADa%3F%3A%0A%C2%BFQu%C3%A9%20herramienta%20usas%20hoy%3F%3A%0AVentana%20preferida%20para%20una%20demo%20de%2020%20minutos%3A" data-mailto="audit">Solicitar auditoría exprés</a>
       <a class="btn btn-ghost" href="#incidente">Volver al incidente</a>
     </div>
   </div>
@@ -804,6 +807,21 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     const ss = String(s % 60).padStart(2, '0');
     el.textContent = `00:${mm}:${ss}`;
   }, 1000);
+})();
+<script>
+(function auditOptions() {
+  var opts = document.querySelectorAll('.audit-opt');
+  var links = document.querySelectorAll('a[data-mailto="audit"]');
+  if (!links.length) return;
+  links.forEach(function (a) { a.dataset.baseHref = a.getAttribute('href'); });
+  opts.forEach(function (opt) {
+    opt.addEventListener('click', function () {
+      opts.forEach(function (o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      var line = '%0A' + encodeURIComponent('Tiempo estimado para detectar 5 vehiculos duplicados: ' + opt.textContent.trim());
+      links.forEach(function (a) { a.setAttribute('href', a.dataset.baseHref + line); });
+    });
+  });
 })();
 </script>
 </body>
