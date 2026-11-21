@@ -376,6 +376,41 @@ footer a:hover { color: var(--accent); }
 .audit-opt:hover { border-color: var(--accent); color: var(--accent); }
 .audit-opt.selected { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 .audit-hint { color: var(--muted); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; margin-top: 12px; }
+
+.gs-modal { position: fixed; inset: 0; z-index: 300; display: none; }
+.gs-modal.open { display: block; }
+.gs-modal-backdrop { position: absolute; inset: 0; background: rgba(5,6,8,0.82); backdrop-filter: blur(6px); }
+.gs-modal-card {
+  position: relative; max-width: 620px; margin: 5vh auto; max-height: 90vh; overflow-y: auto;
+  background: var(--bg-2); border: 1px solid var(--line); padding: 38px 36px 30px;
+}
+.gs-modal-close {
+  position: absolute; top: 14px; right: 16px; background: none; border: none;
+  color: var(--muted); font-size: 26px; cursor: pointer; line-height: 1;
+}
+.gs-modal-close:hover { color: var(--accent); }
+.gs-modal-title { font-family: 'Syne'; font-weight: 800; font-size: 26px; text-transform: uppercase; line-height: 1.05; margin: 10px 0 8px; }
+.gs-modal-sub { color: var(--muted); font-size: 12px; margin-bottom: 22px; }
+.gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.gs-modal-card label { display: block; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.gs-modal-card input, .gs-modal-card select, .gs-modal-card textarea {
+  width: 100%; margin-top: 6px; background: var(--bg); border: 1px solid var(--line);
+  color: var(--text); font-family: inherit; font-size: 13px; padding: 11px 13px;
+}
+.gs-modal-card textarea { resize: vertical; }
+.gs-modal-card input:focus, .gs-modal-card select:focus, .gs-modal-card textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+.gs-modal-card .full { grid-column: 1 / -1; }
+.gs-submit { width: 100%; margin-top: 22px; }
+.gs-modal-alt { color: var(--muted); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 16px; text-align: center; }
+.gs-modal-alt a { color: var(--accent); text-decoration: none; }
+.gs-banner {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 400;
+  background: var(--accent); color: var(--bg); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 22px;
+}
+@media (max-width: 640px) { .gs-grid { grid-template-columns: 1fr; } }
 </style>
 <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
 </head>
@@ -395,7 +430,7 @@ footer a:hover { color: var(--accent); }
     <a href="games/index.html">Dashboard</a>
     <a href="#planes">Planes</a>
     <a href="#auditoria">Auditoría</a>
-    <a class="nav-cta" href="#contacto">Solicitar demo</a>
+    <a class="nav-cta" href="#contacto" data-form="demo">Solicitar demo</a>
   </div>
 </nav>
 
@@ -649,7 +684,7 @@ footer a:hover { color: var(--accent); }
         <li>Retención forense 30 días</li>
         <li>Soporte por tickets</li>
       </ul>
-      <a class="btn btn-ghost" href="#contacto">Empezar</a>
+      <a class="btn btn-ghost" href="#contacto" data-form="plan">Empezar</a>
     </div>
     <div class="plan featured reveal" style="--d:.1s">
       <div class="flag">◆ Recomendado</div>
@@ -664,7 +699,7 @@ footer a:hover { color: var(--accent); }
         <li style="color:var(--muted)">Identificación de activos afectados y correcciones selectivas con aprobación del staff</li>
         <li>Retención forense 90 días</li>
       </ul>
-      <a class="btn btn-solid" href="#contacto">Solicitar demo</a>
+      <a class="btn btn-solid" href="#contacto" data-form="plan">Solicitar demo</a>
     </div>
     <div class="plan reveal" style="--d:.2s">
       <div class="flag">&nbsp;</div>
@@ -678,7 +713,7 @@ footer a:hover { color: var(--accent); }
         <li>SLA y soporte prioritario</li>
         <li>Retención forense configurable</li>
       </ul>
-      <a class="btn btn-ghost" href="#contacto">Hablar con nosotros</a>
+      <a class="btn btn-ghost" href="#contacto" data-form="plan">Hablar con nosotros</a>
     </div>
   </div>
   <p class="pricing-note">Facturación mensual · sin contrato forzoso · migración de datos incluida al salir</p>
@@ -698,7 +733,7 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p>¿Puedes exportar <b>evidencia</b> para justificar un baneo ante tu comunidad?</p></div>
       <div class="check"><div><p>Si hoy te dupan 5 vehículos de gama alta, ¿<b>cuánto tardarías</b> en detectarlo?</p><div class="audit-opts"><span class="audit-opt">Menos de 5 minutos</span><span class="audit-opt">Menos de 1 hora</span><span class="audit-opt">Varias horas</span><span class="audit-opt">No lo sabría</span></div><p class="audit-hint">Selecciona una opción — se añade automáticamente a tu solicitud.</p></div></div>
     </div>
-    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="audit">Quiero mi auditoría exprés</a>
+    <a class="btn btn-solid" href="#contacto" data-form="audit">Quiero mi auditoría exprés</a>
     <p class="pricing-note" style="margin-top:22px">Al solicitarla te pediremos: nombre del servidor · Discord · framework · jugadores promedio · incidentes previos · herramienta actual</p>
   </div>
 </section>
@@ -716,7 +751,7 @@ footer a:hover { color: var(--accent); }
       <div class="check"><p><b>Precio fundador</b> si deciden continuar</p></div>
       <div class="check"><p>Soporte directo durante la evaluación</p></div>
     </div>
-    <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="pilot">Postular mi servidor al piloto</a>
+    <a class="btn btn-solid" href="#contacto" data-form="pilot">Postular mi servidor al piloto</a>
   </div>
 </section>
 
@@ -727,7 +762,7 @@ footer a:hover { color: var(--accent); }
     <p class="sub">GameShield está instalándose ahora en los primeros servidores piloto a precio fundador.
     Agenda 20 minutos y te mostramos tu economía en nuestro panel.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="mailto:hyperiumia@protonmail.com" data-mailto="audit">Solicitar auditoría exprés</a>
+      <a class="btn btn-solid" href="#contacto" data-form="audit">Solicitar auditoría exprés</a>
       <a class="btn btn-ghost" href="#incidente">Volver al incidente</a>
     </div>
   </div>
@@ -868,6 +903,120 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
       selected = opt.textContent.trim();
     });
   });
+})();
+</script>
+<div class="gs-banner" id="gs-banner" hidden>Solicitud enviada — te contactamos en menos de 24 horas.</div>
+
+<div class="gs-modal" id="gs-form" aria-hidden="true">
+  <div class="gs-modal-backdrop" data-close></div>
+  <div class="gs-modal-card">
+    <button class="gs-modal-close" data-close aria-label="Cerrar">&times;</button>
+    <div class="eyebrow">Solicitud · GameShield</div>
+    <h3 class="gs-modal-title">Cuéntanos de<br>tu servidor</h3>
+    <p class="gs-modal-sub">Respondemos en menos de 24 horas. Los campos con * son obligatorios.</p>
+    <form action="https://formsubmit.co/hyperiumia@protonmail.com" method="POST">
+      <input type="hidden" name="_subject" value="GameShield — Solicitud desde la web">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://www.hyperiumia.com/games.html?enviado=1">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="Motivo" id="f-motivo" value="Contacto">
+      <input type="hidden" name="Deteccion de 5 vehiculos" id="f-tiempo" value="">
+      <div class="gs-grid">
+        <label>Nombre del servidor *<input required name="Servidor" placeholder="mi-rp-01"></label>
+        <label>Discord / enlace *<input required name="Discord" placeholder="discord.gg/... o URL"></label>
+        <label>Email de contacto *<input required type="email" name="Email" placeholder="tu@correo.com"></label>
+        <label>Framework
+          <select name="Framework">
+            <option>QBCore</option><option>Qbox</option><option>ESX</option>
+            <option>ox_core</option><option>Otro</option>
+          </select>
+        </label>
+        <label>Jugadores promedio
+          <select name="Jugadores">
+            <option>Menos de 32</option><option>32-64</option>
+            <option>65-128</option><option>Mas de 128</option>
+          </select>
+        </label>
+        <label>Incidentes previos de dupe / economia
+          <select name="Incidentes">
+            <option>No</option><option>Si — duplicacion</option>
+            <option>Si — dinero / inflacion</option><option>Si — otro</option>
+          </select>
+        </label>
+        <label>Herramienta de seguridad actual
+          <input name="Herramienta actual" placeholder="Ninguna / anti-cheat X / scripts propios">
+        </label>
+        <label>Ventana preferida para la demo
+          <select name="Ventana">
+            <option>Manana</option><option>Tarde</option>
+            <option>Noche</option><option>Fin de semana</option>
+          </select>
+        </label>
+        <label class="full">Comentarios
+          <textarea name="Mensaje" rows="3" placeholder="Opcional"></textarea>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-solid gs-submit">Enviar solicitud</button>
+      <p class="gs-modal-alt">¿Prefieres correo directo? <a href="mailto:hyperiumia@protonmail.com">hyperiumia@protonmail.com</a></p>
+    </form>
+  </div>
+</div>
+
+<script>
+(function gsForm() {
+  var modal = document.getElementById('gs-form');
+  var banner = document.getElementById('gs-banner');
+  var motivo = document.getElementById('f-motivo');
+  var tiempo = document.getElementById('f-tiempo');
+  var MOTIVOS = {
+    audit: 'Auditoría exprés',
+    pilot: 'Piloto fundador',
+    demo: 'Demo',
+    plan: 'Plan / precios'
+  };
+
+  function open(kind) {
+    motivo.value = MOTIVOS[kind] || 'Contacto';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('a[data-form]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      open(a.getAttribute('data-form'));
+    });
+  });
+  modal.querySelectorAll('[data-close]').forEach(function (el) {
+    el.addEventListener('click', close);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') close();
+  });
+
+  var opts = document.querySelectorAll('.audit-opt');
+  opts.forEach(function (opt) {
+    opt.addEventListener('click', function () {
+      opts.forEach(function (o) { o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      tiempo.value = opt.textContent.trim();
+    });
+  });
+
+  if (location.search.indexOf('enviado=1') !== -1 && banner) {
+    banner.hidden = false;
+    setTimeout(function () { banner.hidden = true; }, 8000);
+    if (window.history.replaceState) {
+      window.history.replaceState(null, '', location.pathname);
+    }
+  }
 })();
 </script>
 </body>
